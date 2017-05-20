@@ -4,8 +4,8 @@ import UIKit
 
 extension Reactive where Base: UIDatePicker {
 	/// Sets the date of the date picker.
-	public var date: BindingTarget<Date> {
-		return makeBindingTarget { $0.date = $1 }
+	public var date: ValueBindable<Date> {
+		return makeValueBindable(setValue: { $0.date = $1 }, values: { $0.dates })
 	}
 
 	/// A signal of dates emitted by the date picker.

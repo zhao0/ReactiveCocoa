@@ -3,39 +3,18 @@ import UIKit
 import enum Result.NoError
 
 extension Reactive where Base: UIControl {
-	/// The current associated action of `self`, with its registered event mask
-	/// and its disposable.
-	internal var associatedAction: Atomic<(action: CocoaAction<Base>, controlEvents: UIControlEvents, disposable: Disposable)?> {
-		return associatedValue { _ in Atomic(nil) }
+	internal func makeActionBindable(for controlEvent: UIControlEvents) -> ActionBindable<Base> {
+		return ActionBindable(control: base,
+		                      setEnabled: { $0.isEnabled = $1 },
+		                      values: { $0.reactive.controlEvents(controlEvent) })
 	}
 
-	/// Set the associated action of `self` to `action`, and register it for the
-	/// control events specified by `controlEvents`.
-	///
-	/// - parameters:
-	///   - action: The action to be associated.
-	///   - controlEvents: The control event mask.
-	///	  - disposable: An outside disposable that will be bound to the scope of
-	///					the given `action`.
-	internal func setAction(_ action: CocoaAction<Base>?, for controlEvents: UIControlEvents, disposable: Disposable? = nil) {
-		associatedAction.modify { associatedAction in
-			associatedAction?.disposable.dispose()
-
-			if let action = action {
-				base.addTarget(action, action: CocoaAction<Base>.selector, for: controlEvents)
-
-				let compositeDisposable = CompositeDisposable()
-				compositeDisposable += isEnabled <~ action.isEnabled
-				compositeDisposable += { [weak base = self.base] in
-					base?.removeTarget(action, action: CocoaAction<Base>.selector, for: controlEvents)
-				}
-				compositeDisposable += disposable
-
-				associatedAction = (action, controlEvents, ScopedDisposable(compositeDisposable))
-			} else {
-				associatedAction = nil
-			}
-		}
+	internal func makeValueBindable<U>(setValue: @escaping (Base, U) -> Void, values: @escaping (Reactive<Base>) -> Signal<U, NoError>, actionDidBind: ((Base, ActionStates, CompositeDisposable) -> Void)? = nil) -> ValueBindable<U> {
+		return ValueBindable(control: base,
+		                     setEnabled: { $0.isEnabled = $1 },
+		                     setValue: setValue,
+		                     values: { values($0.reactive) },
+		                     actionDidBind: actionDidBind)
 	}
 
 	/// Create a signal which sends a `value` event for each of the specified

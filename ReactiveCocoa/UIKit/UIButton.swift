@@ -4,18 +4,8 @@ import UIKit
 extension Reactive where Base: UIButton {
 	/// The action to be triggered when the button is pressed. It also controls
 	/// the enabled state of the button.
-	public var pressed: CocoaAction<Base>? {
-		get {
-			return associatedAction.withValue { info in
-				return info.flatMap { info in
-					return info.controlEvents == .touchUpInside ? info.action : nil
-				}
-			}
-		}
-
-		nonmutating set {
-			setAction(newValue, for: .touchUpInside)
-		}
+	public var pressed: ActionBindable<Base> {
+		return makeActionBindable(for: .touchUpInside)
 	}
 
 	/// Sets the title of the button for its normal state.

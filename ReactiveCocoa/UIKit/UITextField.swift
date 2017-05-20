@@ -4,8 +4,13 @@ import UIKit
 
 extension Reactive where Base: UITextField {
 	/// Sets the text of the text field.
-	public var text: BindingTarget<String?> {
-		return makeBindingTarget { $0.text = $1 }
+	public var text: ValueBindable<String?> {
+		return makeValueBindable(setValue: { $0.text = $1 }, values: { $0.textValues })
+	}
+
+	/// Sets the text of the text field.
+	public var continuousText: ValueBindable<String?> {
+		return makeValueBindable(setValue: { $0.text = $1 }, values: { $0.continuousTextValues })
 	}
 
 	/// A signal of text values emitted by the text field upon end of editing.
@@ -24,8 +29,8 @@ extension Reactive where Base: UITextField {
 	}
 	
 	/// Sets the attributed text of the text field.
-	public var attributedText: BindingTarget<NSAttributedString?> {
-		return makeBindingTarget { $0.attributedText = $1 }
+	public var attributedText: ValueBindable<NSAttributedString?> {
+		return makeValueBindable(setValue: { $0.attributedText = $1 }, values: { $0.attributedTextValues })
 	}
 	
 	/// Sets the textColor of the text field.
