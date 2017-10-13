@@ -8,7 +8,7 @@
 
 #import "RACChannel.h"
 #import "EXTKeyPathCoding.h"
-#import "metamacros.h"
+#import "RACmetamacros.h"
 
 /// Creates a RACKVOChannel to the given key path. When the targeted object
 /// deallocates, the channel will complete.

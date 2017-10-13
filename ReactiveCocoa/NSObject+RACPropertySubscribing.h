@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "EXTKeyPathCoding.h"
-#import "metamacros.h"
+#import "RACmetamacros.h"
 
 /// Creates a signal which observes `KEYPATH` on `TARGET` for changes.
 ///
